@@ -1,15 +1,34 @@
 
 
-
-
 //penguins is the array of data
 //target is the selection of the g element to place the graph in
 //xscale,yscale are the x and y scales.
 var drawLines = function(penguins,target,
                          xScale,yScale)
 {
+   var lineGenerator = d3.line()
+        .x(function(quiz, i)
+           { return xScale(i);})
+        .y(function(quiz)
+           { return yScale(quiz.grade);});
    
+   
+    var lines = d3.select("svg")
+        .select("#graph")
+        .selectAll("g")
+        .data(penguins)
+        .enter()
+        .append("g")
+        .classed("line",true)
+        .attr("fill","none")
+        .attr("stroke","black");
+   
+    lines.append("path")
+        .datum(function(penguins)
+            { return penguins.quizes;})
+        .attr("d",lineGenerator);
 }
+
 
 
 var makeTranslateString = function(x,y)
@@ -24,7 +43,8 @@ var makeTranslateString = function(x,y)
 var drawAxes = function(graphDim,margins,
                          xScale,yScale)
 {
-   
+   var xAxis = d3.axisBottom(xScale)
+   var yAxis = d3.axisLeft
  
 }
 
@@ -33,7 +53,7 @@ var drawAxes = function(graphDim,margins,
 //margins - object that stores the size of the margins
 var drawLabels = function(graphDim,margins)
 {
-    
+   
 }
 
 
@@ -46,31 +66,31 @@ var initGraph = function(penguins)
     var screen = {width:800,height:600}
     //how much space on each side
     var margins = {left:30,right:20,top:20,bottom:30}
-    
-    
-    
-    var graph = 
+   
+   
+   
+    var graph =
         {
             width:screen.width-margins.left-margins.right,
             height:screen.height - margins.top-margins.bottom
         }
     console.log(graph);
-    
+   
     d3.select("svg")
     .attr("width",screen.width)
     .attr("height",screen.height)
-    
+   
     var target = d3.select("svg")
     .append("g")
-    .attr("id","#graph")
+    .attr("id","graph")
     .attr("transform",
           "translate("+margins.left+","+
                         margins.top+")");
-    
+   
     var maxDay = d3.max(penguins[0].quizes,
                         function(quiz)
                         {return quiz.day});
-    
+   
     var xScale = d3.scaleLinear()
         .domain([1,maxDay])
         .range([0,graph.width])
@@ -78,7 +98,7 @@ var initGraph = function(penguins)
     var yScale = d3.scaleLinear()
         .domain([0,10])
         .range([graph.height,0])
-    
+   
     drawAxes(graph,margins,xScale,yScale);
     drawLines(penguins,target,xScale,yScale);
     drawLabels(graph,margins);
